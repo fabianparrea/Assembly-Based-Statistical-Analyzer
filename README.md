@@ -43,7 +43,7 @@ Aquí se explica el proceso del programa en ensamblador en detalle, con fines de
 -Inicio e inicialización
 -Lectura y validación de `config.ini`
 -Lectura de `notas.txt`
--Verificación de datos validos
+-Verificación de datos válidos
 -Procesamiento principal
 -Salida final y manejo de errores
 
@@ -78,8 +78,68 @@ Si alguna de estas condiciones no se cumple, la función retorna `eax = -2`, ind
 
 ### 4.3 Lectura de `notas.txt`
 
+Este diagrama representa la subrutina `leer_notas`, encargada de procesar el archivo `notas.txt` mediante lectura por bloques y parsing carácter por carácter.
+Se inicializan las estructuras de datos necesarias: el arreglo de frecuencias (`freq_arr`), acumuladores (`sum_notes`, `notes_count`) y variables de estado del parser (`cur_num`, `in_number`, `line_candidate`, `has_candidate`).
+El archivo se abre utilizando la syscall `open`. Si falla, la función retorna `eax = -1`. Luego, se realiza la lectura en bloques de 4096 bytes mediante `read`. Si ocurre un error de lectura, se cierra el archivo y se retorna `eax = 1`.
 
+El contenido leído se procesa byte por byte. Cuando se detectan dígitos (`'0'..'9'`), se construye el número actual utilizando la relación: numero final = numero * 10 + digito
 
+Cuando se encuentra un separador (espacio, tab o salto de línea), el número acumulado se considera como candidato de nota.
+Al finalizar cada línea, se evalúa si existe un candidato válido (`has_candidate == 1`) y si cumple las condiciones:
+- Valor entre 0 y 100.
+- Espacio disponible en el arreglo (máximo 65536 elementos).
+
+Si es válido, se almacena en `notes_arr` y `notes_sorted`, se incrementa el contador de notas, se acumula en `sum_notes` y se actualiza su frecuencia en `freq_arr`.
+Caracteres inválidos dentro de una línea descartan el candidato actual, asegurando robustez ante formatos incorrectos.
+Al alcanzar el final del archivo (EOF), se procesa una posible última línea pendiente. Finalmente, se cierra el archivo y la función retorna `eax = 0` si todo fue exitoso.
+
+![Diagrama de inicio](images/lectura_config.png)
+
+### 4.4 Verificación de datos válidos
+
+Este diagrama representa la verificación posterior a la lectura del archivo `notas.txt`, donde se determina si existen datos válidos para procesar.
+Se evalúa el valor de `notes_count`, que corresponde a la cantidad total de notas almacenadas durante la etapa de parsing.
+
+- Si `notes_count = 0`, significa que no se encontraron notas válidas en el archivo. En este caso, el programa imprime un mensaje de error (`msg_empty`) y finaliza con un código de salida de error.
+- Si `notes_count > 0`, el programa continúa hacia la etapa de procesamiento principal, donde se calculan las estadísticas y se genera el histograma.
+
+Esta verificación evita realizar cálculos innecesarios y asegura que el sistema opere únicamente sobre datos válidos.
+
+![Diagrama de inicio](images/verificacion.png)
+
+### 4.5 Procesamiento principal
+
+Este diagrama representa la etapa principal del programa, donde se procesan los datos obtenidos del archivo `notas.txt` para generar los resultados finales.
+En primer lugar, se invoca la subrutina `calcular_estadisticas`, en la cual se obtienen las métricas principales:
+- Media
+- Mediana (a partir del ordenamiento de los datos)
+- Moda (utilizando el arreglo de frecuencias)
+- Desviación estándar
+
+Se llama a `calcular_histograma`, donde se construye la distribución de las notas. Para ello, se determina la cantidad de intervalos (bins), se inicializan los contadores y se asigna cada nota a su rango correspondiente, incrementando su frecuencia.
+Finalmente, se ejecuta la subrutina `imprimir_reporte`, encargada de mostrar los resultados en consola. Esta incluye la impresión de las estadísticas calculadas y del histograma, aplicando el color y el carácter definidos en el archivo de configuración.
+
+![Diagrama de inicio](images/estadistica.png)
+
+### 4.6 Salida final y manejo de errores
+
+Este diagrama representa la etapa final del programa, donde se determina si la ejecución fue exitosa o si ocurrió algún error durante el proceso.
+Se evalúa el resultado general del sistema:
+
+- Si el proceso fue exitoso, el programa finaliza normalmente mediante `exit(0)`, indicando una ejecución correcta.
+- Si ocurrió algún error, se identifica su tipo y se ejecuta la rutina correspondiente de manejo de errores.
+
+Los posibles errores contemplados son:
+- Error al abrir el archivo `config.ini`.
+- Error al leer el archivo `config.ini`.
+- Configuración inválida.
+- Error al abrir el archivo `notas.txt`.
+- Error al leer el archivo `notas.txt`.
+- Ausencia de datos válidos.
+
+En cada caso, se imprime un mensaje específico en consola para informar al usuario sobre la causa del fallo. Posteriormente, el programa finaliza mediante `exit(1)`, indicando que la ejecución terminó con error.
+
+![Diagrama de inicio](images/salida.png)
 
 ---
 
