@@ -1,0 +1,240 @@
+Juan Perez 85
+Maria Gonzalez 92
+Pedro Alcantara 45
+Jose Ramirez 70
+Ana Delgado Castro 85
+Luis Gomez 60
+Carlos Ruiz 75
+Sofia Rodriguez 100
+Elena Vargas 55
+Roberto Jimenez 88
+Fabian Parreaguirre 100
+Daniel Mora 73
+Valeria Castro 91
+Andres Solano 67
+Paula Herrera 84
+Jorge Araya 58
+Camila Sanchez 77
+Diego Rojas 62
+Lucia Mendez 95
+Fernando Quesada 49
+Monica Salas 81
+Ricardo Vega 74
+Natalia Pineda 69
+Esteban Cordero 87
+Gabriela Nunez 93
+Adrian Chaves 52
+Daniela Brenes 79
+Oscar Valverde 64
+Melissa Ugalde 90
+Pablo Benavides 71
+Andrea Montero 86
+Mauricio Alfaro 57
+Carolina Cespedes 83
+Hector Leiton 68
+Tatiana Murillo 97
+Kevin Villalobos 61
+Mariana Segura 76
+Ruben Calderon 72
+Isabel Fonseca 89
+Alonso Barrantes 54
+Paola Campos 80
+Bryan Matarrita 66
+Veronica Porras 94
+Cristian Aguilar 63
+Karla Zuniga 78
+Miguel Corrales 82
+Laura Hidalgo 59
+Sebastian Mena 96
+Patricia Viquez 65
+Jonathan Coto 74
+Raquel Bonilla 88
+Manuel Roman 53
+Alejandra Marin 85
+Rafael Elizondo 70
+Silvia Acuna 92
+Gerardo Prado 56
+Noelia Roldan 79
+Eduardo Zamora 67
+Viviana Esquivel 84
+Ivan Carvajal 60
+Marisol Soto 91
+Samuel Madrigal 73
+Ericka Arias 77
+Allan Granados 62
+Lisbeth Cubero 95
+Dennis Arce 48
+Yuliana Navarro 81
+Marco Antonio Perez 75
+Maria Fernanda Rojas 90
+Jose Pablo Vargas 68
+Ana Lucia Ramirez 87
+Luis Diego Montero 58
+Carlos Andres Solis 83
+Sofia Maria Campos 64
+Juan Diego Herrera 97
+Valentina Quesada 61
+Andres Felipe Chinchilla 76
+Paula Andrea Mendez 72
+Jorge Luis Salazar 89
+Camila Andrea Morales 55
+Diego Fernando Rivas 80
+Lucia Isabel Naranjo 66
+Fernando Jose Cordero 94
+Monica Patricia Urena 63
+Ricardo Andres Pacheco 78
+Natalia Maria Chaves 82
+Esteban Daniel Segura 59
+Gabriela Elena Solano 96
+Adrian Alberto Araya 65
+Daniela Sofia Paniagua 74
+Oscar David Villalta 88
+Melissa Andrea Cordero 54
+Pablo Cesar Murillo 85
+Andrea Belen Espinoza 70
+Mauricio Andres Fonseca 92
+Carolina Maria Rojas 57
+Hector Manuel Ulate 79
+Tatiana Nicole Herrera 67
+Kevin Jose Badilla 84
+Mariana Isabel Salas 60
+Ruben Dario Porras 91
+Isabel Cristina Solorzano 73
+Alonso Gabriel Aguilera 77
+Paola Andrea Coto 62
+Bryan Esteban Bonilla 95
+Veronica Maria Arce 49
+Cristian Daniel Esquivel 81
+Karla Sofia Mendez 75
+Miguel Angel Cespedes 90
+Laura Vanessa Jimenez 68
+Sebastian Andres Chacon 87
+Patricia Elena Solis 58
+Jonathan David Moya 83
+Raquel Maria Quesada 64
+Manuel Antonio Castro 97
+Alejandra Nicole Herrera 61
+Rafael Angel Zamora 76
+Silvia Patricia Valverde 72
+Gerardo Andres Brenes 89
+Noelia Maria Monge 55
+Eduardo Jose Cordero 80
+Viviana Andrea Segura 66
+Ivan Alberto Perez 94
+Marisol Elena Rojas 63
+Samuel Andres Soto 78
+Ericka Maria Alfaro 82
+Allan Josue Mora 59
+Lisbeth Maria Chaves 96
+Dennis Alexander Aguilar 65
+Yuliana Sofia Vargas 74
+Marco Vinicio Solano 88
+Maria Jose Ramirez 53
+Jose Miguel Delgado 85
+Ana Gabriela Coto 70
+Luis Fernando Porras 92
+Carlos Eduardo Vega 57
+Sofia Alejandra Mendez 79
+Juan Carlos Jimenez 67
+Valentina Acosta 84
+Andres Murillo 60
+Paula Solis 91
+Jorge Mendoza 73
+Camila Rojas 77
+Diego Herrera 62
+Lucia Ramirez 95
+Fernando Vargas 48
+Monica Castro 81
+Ricardo Salazar 75
+Natalia Mora 90
+Esteban Quesada 68
+Gabriela Brenes 87
+Adrian Pineda 58
+Daniela Solano 83
+Oscar Montero 64
+Melissa Herrera 97
+Pablo Chaves 61
+Andrea Jimenez 76
+Mauricio Gomez 72
+Carolina Ruiz 89
+Hector Rodriguez 55
+Tatiana Delgado 80
+Kevin Cordero 66
+Mariana Vega 94
+Ruben Vargas 63
+Isabel Solis 78
+Alonso Mendez 82
+Paola Ramirez 59
+Bryan Herrera 96
+Veronica Castro 65
+Cristian Jimenez 74
+Karla Gomez 88
+Miguel Ruiz 54
+Laura Rodriguez 85
+Sebastian Delgado 70
+Patricia Cordero 92
+Jonathan Vega 57
+Raquel Vargas 79
+Manuel Solis 67
+Alejandra Mendez 84
+Rafael Ramirez 60
+Silvia Herrera 91
+Gerardo Castro 73
+Noelia Jimenez 77
+Eduardo Gomez 62
+Viviana Ruiz 95
+Ivan Rodriguez 49
+Marisol Delgado 81
+Samuel Cordero 75
+Ericka Vega 90
+Allan Vargas 68
+Lisbeth Solis 87
+Dennis Mendez 58
+Yuliana Ramirez 83
+Marco Herrera 64
+Maria Castro 97
+Jose Jimenez 61
+Ana Gomez 76
+Luis Ruiz 72
+Carlos Rodriguez 89
+Sofia Delgado 55
+Juan Cordero 80
+Valentina Vega 66
+Andres Vargas 94
+Paula Solorzano 63
+Jorge Chacon 78
+Camila Urena 82
+Diego Badilla 59
+Lucia Elizondo 96
+Fernando Carvajal 65
+Monica Madrigal 74
+Ricardo Esquivel 88
+Natalia Arias 53
+Esteban Navarro 85
+Gabriela Bonilla 70
+Adrian Roman 92
+Daniela Marin 57
+Oscar Prado 79
+Melissa Acuna 67
+Pablo Roldan 84
+Andrea Zamora 60
+Mauricio Cespedes 91
+Carolina Leiton 73
+Hector Murillo 77
+Tatiana Villalobos 62
+Kevin Calderon 95
+Mariana Fonseca 48
+Ruben Barrantes 81
+Isabel Campos 75
+Alonso Matarrita 90
+Paola Aguilar 68
+Bryan Corrales 87
+Veronica Hidalgo 58
+Cristian Viquez 83
+Karla Benavides 64
+Miguel Ugalde 97
+Laura Valverde 61
+Sebastian Porras 76
+Patricia Araya 72
+Jonathan Granados 89
+Raquel Cubero 55
