@@ -10,22 +10,8 @@ El presente proyecto consiste en el desarrollo de un sistema de análisis estad�
 
 ---
 
-## 2. Objetivos
 
-### 2.1 Objetivo general
-Desarrollar un sistema de análisis estadístico en ensamblador x86-64 capaz de leer archivos de configuración y datos, procesar la información de forma eficiente y generar métricas estadísticas junto con un histograma representativo en consola.
-
-### 2.2 Objetivos específicos
-- Implementar la lectura y validación de un archivo de configuración que permita parametrizar el comportamiento del sistema. 
-- Diseñar un mecanismo de parsing para procesar archivos de datos de manera eficiente, utilizando lectura por bloques. 
-- Calcular métricas estadísticas fundamentales como media, mediana, moda y desviación estándar a partir de los datos procesados.  
-- Construir un histograma configurable que represente la distribución de las notas según el intervalo definido.
-- Construir un histograma configurable que represente la distribución de las notas según el intervalo definido.
-- Desarrollar un sistema de impresión en consola que muestre los resultados de forma clara y estructurada, incluyendo soporte para colores mediante códigos ANSI.  
-
----
-
-## 3. Descripción general del sistema
+## 2. Descripción general del sistema
 
 El sistema opera a partir de dos archivos de entrada: un archivo de configuración (`config.ini`) y un archivo de datos (`notas.txt`). Inicialmente, se lee y valida el archivo de configuración, extrayendo los parámetros necesarios para el funcionamiento del programa. Posteriormente, se realiza la lectura del archivo de notas mediante un enfoque de procesamiento por bloques, identificando y almacenando los valores numéricos correspondientes a cada línea.
 
@@ -37,7 +23,7 @@ config.ini → lectura y validación → notas.txt → parsing → cálculo esta
 
 ---
 
-## 4. Diagrama de flujo
+## 3. Diagrama de flujo
 
 Aquí se explica el proceso del programa en ensamblador en detalle, con fines de que sea legible se dividirá el diagrama de flujo en 6 partes:
 -Inicio e inicialización
@@ -47,7 +33,7 @@ Aquí se explica el proceso del programa en ensamblador en detalle, con fines de
 -Procesamiento principal
 -Salida final y manejo de errores
 
-### 4.1 Inicio e inicalización
+### 3.1 Inicio e inicalización
 
 Este diagrama representa la etapa inicial del programa, comenzando en el punto de entrada `_start`, donde se realiza la preparación básica antes del procesamiento de datos.
 Inicialmente, se inicializa el buffer `char_buf` para asegurar un estado conocido en memoria. Luego, se invoca la subrutina `leer_config`, encargada de abrir, leer y validar el archivo `config.ini`.
@@ -60,7 +46,7 @@ El resultado de esta operación se devuelve en el registro `eax`, el cual determ
 
 ![Diagrama de inicio](images/inicio.png)
 
-### 4.2 Lectura y validación de `config.ini`
+### 3.2 Lectura y validación de `config.ini`
 
 
 Este diagrama representa la subrutina `leer_config`, encargada de abrir, leer y validar el archivo de configuración `config.ini`.
@@ -76,7 +62,7 @@ Si alguna de estas condiciones no se cumple, la función retorna `eax = -2`, ind
 
 ![Diagrama de inicio](images/lectura_config.png)
 
-### 4.3 Lectura de `notas.txt`
+### 3.3 Lectura de `notas.txt`
 
 Este diagrama representa la subrutina `leer_notas`, encargada de procesar el archivo `notas.txt` mediante lectura por bloques y parsing carácter por carácter.
 Se inicializan las estructuras de datos necesarias: el arreglo de frecuencias (`freq_arr`), acumuladores (`sum_notes`, `notes_count`) y variables de estado del parser (`cur_num`, `in_number`, `line_candidate`, `has_candidate`).
@@ -95,7 +81,7 @@ Al alcanzar el final del archivo (EOF), se procesa una posible última línea pe
 
 ![Diagrama de inicio](images/lectura_config.png)
 
-### 4.4 Verificación de datos válidos
+### 3.4 Verificación de datos válidos
 
 Este diagrama representa la verificación posterior a la lectura del archivo `notas.txt`, donde se determina si existen datos válidos para procesar.
 Se evalúa el valor de `notes_count`, que corresponde a la cantidad total de notas almacenadas durante la etapa de parsing.
@@ -107,7 +93,7 @@ Esta verificación evita realizar cálculos innecesarios y asegura que el sistem
 
 ![Diagrama de inicio](images/verificacion.png)
 
-### 4.5 Procesamiento principal
+### 3.5 Procesamiento principal
 
 Este diagrama representa la etapa principal del programa, donde se procesan los datos obtenidos del archivo `notas.txt` para generar los resultados finales.
 En primer lugar, se invoca la subrutina `calcular_estadisticas`, en la cual se obtienen las métricas principales:
@@ -121,7 +107,7 @@ Finalmente, se ejecuta la subrutina `imprimir_reporte`, encargada de mostrar los
 
 ![Diagrama de inicio](images/estadistica.png)
 
-### 4.6 Salida final y manejo de errores
+### 3.6 Salida final y manejo de errores
 
 Este diagrama representa la etapa final del programa, donde se determina si la ejecución fue exitosa o si ocurrió algún error durante el proceso.
 Se evalúa el resultado general del sistema:
@@ -143,137 +129,341 @@ En cada caso, se imprime un mensaje específico en consola para informar al usua
 
 ---
 
-## 5. Arquitectura del programa
+## 4. Arquitectura del programa
 
-Descripción de la organización modular del sistema.
+El programa está organizado en módulos independientes, cada uno encargado de una etapa específica del flujo:
 
-Módulos principales:
-- _start  
-- leer_config  
-- leer_notas  
-- calcular_estadisticas  
-- calcular_histograma  
-- imprimir_reporte  
+- `_start`: punto de entrada. Controla el flujo general del programa, maneja errores y coordina las llamadas a las demás subrutinas.
+- `leer_config`: abre, parsea y valida el archivo `config.ini`, extrayendo los parámetros necesarios.
+- `leer_notas`: procesa `notas.txt` mediante lectura por bloques, construyendo las notas y almacenándolas en memoria.
+- `calcular_estadisticas`: calcula media, mediana, moda y desviación estándar a partir de los datos procesados.
+- `calcular_histograma`: agrupa las notas en intervalos definidos y genera los conteos por bin.
+- `imprimir_reporte`: imprime las estadísticas y el histograma en consola con formato y color.
 
-Explicación breve de la función de cada módulo.
+Cada módulo trabaja sobre estructuras en memoria compartidas, evitando dependencias innecesarias y manteniendo el flujo secuencial.
 
----
-
-## 6. Formato de entrada
-
-### 6.1 Archivo de configuración (config.ini)
-
-Ejemplo:
-
-COLOR:1  
-INTERVALO:50  
-CARACTER:@  
-
-Descripción de cada parámetro, su significado y restricciones.
 
 ---
 
-### 6.2 Archivo de datos (notas.txt)
+## 5. Formato de entrada
+
+### 5.1 Archivo de configuración (config.ini)
+
+
+El archivo define los parámetros de visualización del programa.
+
+Formato esperado:
+
+COLOR:<valor>
+INTERVALO:<valor>
+CARACTER:<valor>
+
+Restricciones:
+- `COLOR`: entero entre 1 y 4.
+- `INTERVALO`: entero entre 1 y 100.
+- `CARACTER`: cualquier carácter ASCII no nulo.
+
+Se permiten espacios, líneas vacías y comentarios.
+
+---
+
+### 5.2 Archivo de datos (notas.txt)
+
+Cada línea contiene un nombre seguido de una nota numérica:
 
 Ejemplo:
 
 Nombre Apellido 85  
 Otro Nombre 92  
 
-Descripción del formato de cada línea y del rango de valores permitidos.
+Consideraciones:
+- El nombre puede tener cualquier cantidad de palabras.
+- La nota debe estar entre 0 y 100.
+- Solo se toma el último número válido de cada línea.
+- Líneas con contenido inválido son descartadas.
 
 ---
 
-## 7. Procesamiento de datos
+## 6. Procesamiento de datos
 
-### 7.1 Parsing de configuración
+### 6.1 Parsing de configuración
 
-Explicación de cómo se identifican las claves, cómo se leen los valores y cómo se validan.
+El archivo `config.ini` se recorre byte por byte, ignorando espacios, saltos de línea y comentarios. Para cada línea se verifica si coincide con alguna clave válida.
+
+Ejemplo del chequeo de claves:
+
+    mov rdi, rbx
+    mov rsi, key_color
+    call starts_with
+    test eax, eax
+    jz .check_intervalo
+
+Si la clave coincide, se parsea el valor numérico:
+
+    lea rdi, [rbx + 6]
+    call parse_uint_line
+    mov [color_value], eax
+    mov byte [found_color], 1
+
+Al final se valida que todas las claves existan y estén en rango:
+
+    mov eax, [color_value]
+    cmp eax, 1
+    jb .cfg_bad
+    cmp eax, 4
+    ja .cfg_bad
+
+### 6.2 Parsing de notas mediante lectura por bloques
+
+El archivo se lee en bloques de 4096 bytes:
+
+    mov eax, 0
+    mov rdi, r12
+    mov rsi, notas_chunk
+    mov edx, 4096
+    syscall
+
+Los números se construyen carácter por carácter:
+
+    imul eax, eax, 10
+    sub dl, '0'
+    add eax, edx
+    mov [cur_num], eax
+
+Esto implementa:
+
+    número = número * 10 + dígito
+
+Al detectar un separador, se guarda el candidato:
+
+    mov eax, [cur_num]
+    mov [line_candidate], eax
+    mov byte [has_candidate], 1
+
+Y al final de línea se valida y guarda:
+
+    cmp eax, 100
+    ja .reset_line
+
+    mov [notes_arr + rcx*4], eax
+    inc dword [notes_count]
+    add qword [sum_notes], rdx
+    inc dword [freq_arr + rax*4]
+
+### 6.3 Estructuras de almacenamiento
+
+Las estructuras principales se definen en memoria:
+
+    notes_arr       resd 65536
+    notes_sorted    resd 65536
+    freq_arr        resd 101
+    bins_arr        resd 128
+
+Se utilizan para almacenar las notas, mantener una copia ordenada, contar frecuencias y construir el histograma.
+
+Variables auxiliares:
+
+    notes_count     resd 1
+    sum_notes       resq 1
+    cur_num         resd 1
+    in_number       resb 1
+    line_candidate  resd 1
+    has_candidate   resb 1
+
+## 7. Cálculo estadístico
+
+### 7.1 Media
+
+Se calcula como:
+
+    media = suma_notas / cantidad_notas
+
+Implementación:
+
+    mov rax, [sum_notes]
+    cvtsi2sd xmm0, rax
+    mov eax, [notes_count]
+    cvtsi2sd xmm1, rax
+    divsd xmm0, xmm1
+
+Luego se escala para impresión:
+
+    media_escalada = media * 10
 
 ---
 
-### 7.2 Parsing de notas mediante lectura por bloques
+### 7.2 Mediana
 
-Explicación del enfoque de lectura tipo streaming, manejo de buffers y lógica de procesamiento.
+Primero se ordena el arreglo `notes_sorted` usando **insertion sort**, que consiste en tomar cada elemento e insertarlo en su posición correcta dentro de la parte ya ordenada del arreglo.
 
----
+Ejemplo del movimiento de elementos:
 
-### 7.3 Estructuras de almacenamiento
+    mov eax, [notes_sorted + r12*4]
 
-Descripción de las estructuras utilizadas para almacenar y procesar los datos:
-- Arreglo de notas  
-- Arreglo ordenado  
-- Arreglo de frecuencias  
-- Arreglo de bins  
+La mediana se calcula según la cantidad de datos:
 
----
+- Caso impar:
 
-## 8. Cálculo estadístico
+    mediana = elemento_central
 
-### 8.1 Media
+- Caso par:
 
-Descripción del cálculo de la media.
+    mediana = (elemento_central_1 + elemento_central_2) / 2
 
----
+Implementación de la decisión:
 
-### 8.2 Mediana
+    test eax, 1
+    jnz .median_odd
 
-Descripción del método de ordenamiento y el cálculo para casos pares e impares.
+Caso par:
 
----
-
-### 8.3 Moda
-
-Descripción del uso del arreglo de frecuencias para determinar la moda.
+    add eax, edx
+    imul eax, 10
+    idiv ecx
 
 ---
 
-### 8.4 Desviación estándar
+### 7.3 Moda
 
-Descripción de la fórmula utilizada y del uso de operaciones en punto flotante.
+Se define como el valor con mayor frecuencia:
 
----
+    moda = argmax(freq_arr[i])
 
-## 9. Generación del histograma
+Implementación:
 
-Explicación de cómo se calcula la cantidad de bins, cómo se asignan las notas a cada bin y cómo se manejan los casos límite.
+    mov eax, [freq_arr + rbx*4]
+    cmp eax, r12d
+    jle .next_mode
 
----
+Se guarda el índice con mayor frecuencia:
 
-## 10. Sistema de impresión
-
-Descripción del mecanismo de impresión, uso de syscalls y funciones auxiliares.
-
----
-
-## 11. Uso de códigos ANSI
-
-Explicación del uso de códigos ANSI para la representación de colores en la salida.
+    mov r13d, ebx
+    mov [mode_value], r13d
 
 ---
 
-## 12. Manejo de errores
+### 7.4 Desviación estándar
 
-Descripción de los errores contemplados:
-- Error al abrir archivos  
-- Error al leer archivos  
-- Configuración inválida  
-- Ausencia de datos válidos  
+Se calcula como:
+
+    σ = sqrt( Σ(x - μ)^2 / N )
+
+Implementación:
+
+    subsd xmm1, xmm7
+    mulsd xmm1, xmm1
+    addsd xmm2, xmm1
+
+Luego:
+
+    divsd xmm2, xmm3
+    sqrtsd xmm2, xmm2
+
+Escalado:
+
+    σ_escalada = σ * 100
 
 ---
 
-## 13. Pruebas realizadas
+## 8. Generación del histograma
 
-Descripción de los distintos tipos de pruebas realizadas:
-- Casos normales  
-- Casos extremos  
-- Casos de error  
+Cantidad de bins:
+
+    bin_count = floor(99 / intervalo) + 1
+
+Implementación:
+
+    mov eax, 99
+    div ecx
+    inc eax
+    mov [bin_count], eax
+
+Asignación de bin:
+
+    índice = (nota - 1) / intervalo
+
+Implementación:
+
+    dec eax
+    div dword [intervalo_value]
+
+Incremento:
+
+    inc dword [bins_arr + rax*4]
 
 ---
 
+## 9. Sistema de impresión
+
+Se utiliza la syscall `write`:
+
+    mov eax, 1
+    mov edi, 1
+    syscall
+
+Conversión de números:
+
+    div ecx
+    add dl, '0'
+
+---
+
+## 10. Uso de códigos ANSI
+
+Ejemplo:
+
+    ansi_red    db 27,'[','3','1','m',0
+
+Selección:
+
+    cmp eax, 1
+    je .red
+
+Reset:
+
+    mov rsi, ansi_reset
+    call print_cstr
+
+---
+
+## 11. Manejo de errores
+
+Chequeo de errores:
+
+    test rax, rax
+    js .open_fail
+
+Códigos de retorno:
+
+    -1 → open fail  
+    1  → read fail  
+    -2 → config inválido  
+
+Salida:
+
+    mov eax, 60
+    mov edi, 1
+    syscall
+
+Ejecución exitosa:
+
+    mov eax, 60
+    xor edi, edi
+    syscall
+
+  
+## 12. Cómo Correr el programa
+
+## 13. Resultados
+
+---
 
 ## 14. Conclusión
 
-Conclusión del proyecto, incluyendo resultados obtenidos, aprendizajes y relevancia del sistema desarrollado.
+Se logró implementar un analizador estadístico completo en ensamblador x86-64, capaz de leer archivos externos, procesar datos y generar resultados en consola sin depender de librerías de alto nivel. El programa utiliza syscalls para el manejo de archivos y salida, implementa parsing manual de texto mediante lectura por bloques y hace uso de estructuras de datos en memoria para almacenar y procesar la información.
+
+Los cálculos estadísticos, incluyendo media, mediana, moda y desviación estándar, se realizan utilizando registros SSE para manejar valores en punto flotante. Además, se construye un histograma configurable a partir de los parámetros definidos en `config.ini`, permitiendo ajustar la visualización de los resultados según el intervalo, el carácter y el color seleccionados.
+
+El desarrollo del proyecto implicó trabajar directamente con conceptos de bajo nivel como manejo de memoria, control de flujo, parsing de datos y uso de la ABI del sistema, logrando una solución funcional y estructurada acorde a los requerimientos planteados.
 
 ---
