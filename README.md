@@ -480,7 +480,7 @@ A continuación se muestra un ejemplo de ejecución del programa utilizando el a
 
 La salida se presenta directamente en la terminal, incluyendo las métricas estadísticas y el histograma generado.
 
-![Resultado en terminal](images/resultado.png)
+![Resultado en terminal](images/resultado.jpeg)
 
 ---
 
