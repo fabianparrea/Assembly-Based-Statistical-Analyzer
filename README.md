@@ -188,7 +188,7 @@ Consideraciones:
 
 ### 6.1 Parsing de configuración
 
-El archivo `config.ini` se recorre byte por byte, ignorando espacios, saltos de línea y comentarios. Para cada línea se verifica si coincide con alguna clave válida.
+El archivo `config.ini` se recorre byte por byte, ignorando espacios, saltos de línea y comentarios. Para cada línea se verifica si coincide con alguna de las claves esperadas (`COLOR`, `INTERVALO`, `CARACTER`). Esta verificación se realiza mediante comparaciones directas de strings, permitiendo identificar la clave al inicio de cada línea.
 
 Ejemplo del chequeo de claves:
 
@@ -198,14 +198,14 @@ Ejemplo del chequeo de claves:
     test eax, eax
     jz .check_intervalo
 
-Si la clave coincide, se parsea el valor numérico:
+Cuando se detecta una clave válida, se procede a parsear el valor numérico correspondiente desde la posición adecuada dentro de la línea. Este valor se almacena en memoria y se marca una bandera indicando que la clave fue encontrada.
 
     lea rdi, [rbx + 6]
     call parse_uint_line
     mov [color_value], eax
     mov byte [found_color], 1
 
-Al final se valida que todas las claves existan y estén en rango:
+Una vez procesado todo el archivo, se realiza una validación final para asegurar que todas las claves estén presentes y que sus valores estén dentro de los rangos permitidos.
 
     mov eax, [color_value]
     cmp eax, 1
@@ -213,9 +213,11 @@ Al final se valida que todas las claves existan y estén en rango:
     cmp eax, 4
     ja .cfg_bad
 
+---
+
 ### 6.2 Parsing de notas mediante lectura por bloques
 
-El archivo se lee en bloques de 4096 bytes:
+El archivo `notas.txt` se procesa utilizando lectura por bloques de 4096 bytes, lo cual permite manejar archivos grandes sin depender de su tamaño total.
 
     mov eax, 0
     mov rdi, r12
@@ -223,24 +225,24 @@ El archivo se lee en bloques de 4096 bytes:
     mov edx, 4096
     syscall
 
-Los números se construyen carácter por carácter:
+Cada bloque leído se procesa carácter por carácter. Cuando se detecta un dígito, se construye el número actual acumulando su valor en base 10.
 
     imul eax, eax, 10
     sub dl, '0'
     add eax, edx
     mov [cur_num], eax
 
-Esto implementa:
+Esto implementa la relación:
 
     número = número * 10 + dígito
 
-Al detectar un separador, se guarda el candidato:
+Cuando se encuentra un separador (espacio, tab o salto de línea), el número acumulado se considera como candidato válido dentro de la línea.
 
     mov eax, [cur_num]
     mov [line_candidate], eax
     mov byte [has_candidate], 1
 
-Y al final de línea se valida y guarda:
+Al finalizar la línea, se verifica que el candidato sea válido (entre 0 y 100) y se almacena en memoria junto con la actualización de los acumuladores.
 
     cmp eax, 100
     ja .reset_line
@@ -250,16 +252,23 @@ Y al final de línea se valida y guarda:
     add qword [sum_notes], rdx
     inc dword [freq_arr + rax*4]
 
+
+
+---
+
 ### 6.3 Estructuras de almacenamiento
 
-Las estructuras principales se definen en memoria:
+Las estructuras de datos utilizadas se definen en memoria estática y permiten almacenar eficientemente la información procesada.
 
     notes_arr       resd 65536
     notes_sorted    resd 65536
     freq_arr        resd 101
     bins_arr        resd 128
 
-Se utilizan para almacenar las notas, mantener una copia ordenada, contar frecuencias y construir el histograma.
+- `notes_arr`: almacena las notas en el orden original.
+- `notes_sorted`: copia utilizada para ordenar y calcular la mediana.
+- `freq_arr`: arreglo de frecuencias para calcular la moda.
+- `bins_arr`: almacenamiento de los intervalos del histograma.
 
 Variables auxiliares:
 
@@ -270,15 +279,19 @@ Variables auxiliares:
     line_candidate  resd 1
     has_candidate   resb 1
 
+Estas variables permiten controlar el estado del parser y los acumuladores necesarios para el cálculo posterior.
+
+---
+
 ## 7. Cálculo estadístico
 
 ### 7.1 Media
 
-Se calcula como:
+La media se calcula como:
 
     media = suma_notas / cantidad_notas
 
-Implementación:
+Se utiliza SSE para realizar la división en punto flotante:
 
     mov rax, [sum_notes]
     cvtsi2sd xmm0, rax
@@ -286,7 +299,7 @@ Implementación:
     cvtsi2sd xmm1, rax
     divsd xmm0, xmm1
 
-Luego se escala para impresión:
+Luego se escala para mantener precisión decimal en la impresión:
 
     media_escalada = media * 10
 
@@ -294,38 +307,30 @@ Luego se escala para impresión:
 
 ### 7.2 Mediana
 
-Primero se ordena el arreglo `notes_sorted` usando **insertion sort**, que consiste en tomar cada elemento e insertarlo en su posición correcta dentro de la parte ya ordenada del arreglo.
-
-Ejemplo del movimiento de elementos:
+Se ordena el arreglo `notes_sorted` mediante insertion sort, el cual inserta cada elemento en su posición correcta dentro de la parte ya ordenada del arreglo.
 
     mov eax, [notes_sorted + r12*4]
 
-La mediana se calcula según la cantidad de datos:
+La mediana depende de la cantidad de datos:
 
-- Caso impar:
+- Si es impar:
 
     mediana = elemento_central
 
-- Caso par:
+- Si es par:
 
     mediana = (elemento_central_1 + elemento_central_2) / 2
 
-Implementación de la decisión:
+La decisión se realiza así:
 
     test eax, 1
     jnz .median_odd
-
-Caso par:
-
-    add eax, edx
-    imul eax, 10
-    idiv ecx
 
 ---
 
 ### 7.3 Moda
 
-Se define como el valor con mayor frecuencia:
+La moda corresponde al valor con mayor frecuencia dentro del arreglo `freq_arr`.
 
     moda = argmax(freq_arr[i])
 
@@ -335,16 +340,13 @@ Implementación:
     cmp eax, r12d
     jle .next_mode
 
-Se guarda el índice con mayor frecuencia:
-
-    mov r13d, ebx
-    mov [mode_value], r13d
+Se guarda el índice con mayor frecuencia encontrada.
 
 ---
 
 ### 7.4 Desviación estándar
 
-Se calcula como:
+Se calcula utilizando:
 
     σ = sqrt( Σ(x - μ)^2 / N )
 
@@ -353,8 +355,6 @@ Implementación:
     subsd xmm1, xmm7
     mulsd xmm1, xmm1
     addsd xmm2, xmm1
-
-Luego:
 
     divsd xmm2, xmm3
     sqrtsd xmm2, xmm2
@@ -367,27 +367,23 @@ Escalado:
 
 ## 8. Generación del histograma
 
-Cantidad de bins:
+Se calcula la cantidad de intervalos:
 
     bin_count = floor(99 / intervalo) + 1
-
-Implementación:
 
     mov eax, 99
     div ecx
     inc eax
     mov [bin_count], eax
 
-Asignación de bin:
+Cada nota se asigna a un intervalo correspondiente:
 
     índice = (nota - 1) / intervalo
-
-Implementación:
 
     dec eax
     div dword [intervalo_value]
 
-Incremento:
+Finalmente, se incrementa el contador del bin:
 
     inc dword [bins_arr + rax*4]
 
@@ -395,31 +391,28 @@ Incremento:
 
 ## 9. Sistema de impresión
 
-Se utiliza la syscall `write`:
+La salida se realiza mediante la syscall `write`, enviando directamente los datos al descriptor estándar de salida.
 
     mov eax, 1
     mov edi, 1
     syscall
 
-Conversión de números:
-
-    div ecx
-    add dl, '0'
+Se implementan rutinas auxiliares para convertir números a ASCII y poder imprimirlos correctamente en consola.
 
 ---
 
 ## 10. Uso de códigos ANSI
 
-Ejemplo:
+Los códigos ANSI se utilizan para modificar el color de salida en la terminal.
 
     ansi_red    db 27,'[','3','1','m',0
 
-Selección:
+Se selecciona el color según el valor de configuración:
 
     cmp eax, 1
     je .red
 
-Reset:
+Al finalizar la impresión, se restablece el color:
 
     mov rsi, ansi_reset
     call print_cstr
@@ -428,33 +421,66 @@ Reset:
 
 ## 11. Manejo de errores
 
-Chequeo de errores:
+Se verifican errores en cada operación crítica como apertura y lectura de archivos.
 
     test rax, rax
     js .open_fail
 
-Códigos de retorno:
+Se utilizan distintos códigos de retorno:
 
     -1 → open fail  
     1  → read fail  
     -2 → config inválido  
 
-Salida:
+El programa finaliza con:
 
     mov eax, 60
     mov edi, 1
     syscall
 
-Ejecución exitosa:
+En caso exitoso:
 
     mov eax, 60
     xor edi, edi
     syscall
 
-  
-## 12. Cómo Correr el programa
+---
+
+## 12. Compilación y ejecución del programa
+
+El programa fue desarrollado y probado en un entorno Linux Lubuntu sobre arquitectura x86-64.
+
+Asumiendo que los archivos `histograma.asm`, `config.ini` y `notas.txt` se encuentran en la misma carpeta, se siguen los siguientes pasos desde la terminal:
+
+1. Ensamblado del código:
+
+    nasm -f elf64 -o histograma.o histograma.asm
+
+Este comando utiliza NASM para convertir el archivo ensamblador en un archivo objeto (`.o`) en formato ELF64, el cual es necesario para el enlazado.
+
+2. Enlazado:
+
+    ld -o histograma histograma.o
+
+Este paso genera el ejecutable final (`histograma`) a partir del archivo objeto.
+
+3. Ejecución:
+
+    ./histograma
+
+Este comando ejecuta el programa, el cual leerá los archivos de entrada y mostrará los resultados en la terminal.
+
+Los nombres de los archivos generados pueden modificarse, sin embargo, se recomienda mantener nombres consistentes (`histograma.o`, `histograma`) para facilitar la organización y comprensión del flujo de compilación.
+
+---
 
 ## 13. Resultados
+
+A continuación se muestra un ejemplo de ejecución del programa utilizando el archivo `config.ini` y el archivo `notas.txt` proporcionados.
+
+La salida se presenta directamente en la terminal, incluyendo las métricas estadísticas y el histograma generado.
+
+![Resultado en terminal](images/resultado.png)
 
 ---
 
@@ -465,5 +491,3 @@ Se logró implementar un analizador estadístico completo en ensamblador x86-64,
 Los cálculos estadísticos, incluyendo media, mediana, moda y desviación estándar, se realizan utilizando registros SSE para manejar valores en punto flotante. Además, se construye un histograma configurable a partir de los parámetros definidos en `config.ini`, permitiendo ajustar la visualización de los resultados según el intervalo, el carácter y el color seleccionados.
 
 El desarrollo del proyecto implicó trabajar directamente con conceptos de bajo nivel como manejo de memoria, control de flujo, parsing de datos y uso de la ABI del sistema, logrando una solución funcional y estructurada acorde a los requerimientos planteados.
-
----
